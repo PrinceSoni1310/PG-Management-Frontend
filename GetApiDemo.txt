@@ -1,0 +1,84 @@
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+
+export const GetApiDemo = () => {
+  const [users, setUsers] = useState([]);
+
+  const getUsers = async () => {
+    const res = await axios.get("https://node5.onrender.com/user/user/");
+    setUsers(res.data.data);
+  };
+
+  const deleteUser = async (id) => {
+    const res = await axios.delete(
+      `https://node5.onrender.com/user/user/${id}`,
+    );
+    console.log(res);
+    if (res.status == 204) {
+      toast.success("user deleted successfully..");
+      getUsers();
+    }
+  };
+
+  useEffect(() => {
+    getUsers();
+  }, []);
+
+  return (
+    <div className="p-6">
+      <h1 className="text-4xl text-center underline decoration-wavy font-bold mb-4 text-gray-700 ">
+        Users List
+      </h1>
+
+      <div className="bg-white shadow-md rounded-lg overflow-hidden ">
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-lg text-center ">
+            <thead className="bg-blue-600 text-white uppercase text-xl">
+              <tr>
+                <th className="px-6 py-3 ">ID</th>
+                <th className="px-6 py-3">Name</th>
+                <th className="px-6 py-3">Email</th>
+                <th className="px-6 py-3">Delete</th>
+              </tr>
+            </thead>
+
+            <tbody className="text-gray-700">
+              {users.length > 0 ? (
+                users.map((user) => (
+                  <tr
+                    key={user._id}
+                    className="border-b hover:bg-gray-100 transition"
+                  >
+                    <td className="px-6 py-3 border-r">{user._id}</td>
+                    <td className="px-6 py-3 border-r">{user.name}</td>
+                    <td className="px-6 py-3 border-r">{user.email}</td>
+                    <td>
+                      <button
+                        onClick={() => {
+                          deleteUser(user._id);
+                        }}
+                        className="text-red-600 cursor-pointer font-bold"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan="3"
+                    className="text-center px-6 py-6 text-gray-500"
+                  >
+                    No Users Found...
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+};
