@@ -26,6 +26,9 @@ import {NoticesTenant} from "../pages/tenant/notices";
 import {ComplaintsTenant} from "../pages/tenant/complaints";
 import {PaymentsTenant} from "../pages/tenant/payments";
 import {Profile} from "../pages/tenant/profile";
+import ProtectedRoutes from "../Components/ProtectedRoutes";
+import { ForgotPassword } from "../Components/forgotPassword";
+import { ResetPassword } from "../Components/ResetPassword";
 
 const router = createBrowserRouter([
   /* HOME */
@@ -44,6 +47,16 @@ const router = createBrowserRouter([
     element: <SignUp />,
   },
 
+  {
+    path : "/forgotpassword",
+    element : <ForgotPassword/>
+  },
+
+  {
+    path : "/resetpassword/:token",
+    element : <ResetPassword/>
+  },
+
   /* ADMIN */
   {
     path: "/admin",
@@ -52,9 +65,12 @@ const router = createBrowserRouter([
 
   {
     path: "/owner",
-    element: <OwnerSidebar />,
+    element: 
+    <ProtectedRoutes Roles={["Owner"]}>
+    <OwnerSidebar />
+    </ProtectedRoutes>,
     children: [
-      { path: "", element: <OwnerDashboard /> },
+      { path: "dashboard", element: <OwnerDashboard /> },
       { path: "rooms", element: <Rooms /> },
       { path: "tenants", element: <Tenants /> },
       { path: "rent", element: <RentManagement /> },
@@ -68,7 +84,10 @@ const router = createBrowserRouter([
 
   {
     path: "/tenant",
-    element: <TenantNavbar />,
+    element: 
+    <ProtectedRoutes Roles={["Tenant"]}>
+    <TenantNavbar />
+    </ProtectedRoutes>,
     children: [
       { path: "dashboard", element: <TenantDashboard /> },
       { path: "rent", element: <RentDetails /> },

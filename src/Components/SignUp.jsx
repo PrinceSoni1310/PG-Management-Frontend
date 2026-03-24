@@ -25,7 +25,7 @@ export const SignUp = () => {
         navigate("/login");
       }
     } catch (err) {
-      toast.error("user not sign-in successfully");
+      toast.error("user not sign-up successfully"); 
     }
   };
 

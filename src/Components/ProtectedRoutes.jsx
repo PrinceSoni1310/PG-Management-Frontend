@@ -1,7 +1,7 @@
-import { Children, useEffect, useState } from "react";
+import { children, useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 
-const ProtectedRoutes = ({ Children, Roles }) => {
+const ProtectedRoutes = ({ children, Roles }) => {
   const [token, setToken] = useState();
   const [role, setRole] = useState();
   const [loading, setLoading] = useState(true);
@@ -21,7 +21,7 @@ const ProtectedRoutes = ({ Children, Roles }) => {
   if (!Roles.includes(role)) {
     return <Navigate to="/login" />;
   }
-  return Children;
+  return children;
 };
 
 export default ProtectedRoutes;

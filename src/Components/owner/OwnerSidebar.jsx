@@ -23,7 +23,7 @@ export const OwnerSidebar = () => {
         <ul className="space-y-3 text-sm">
 
           <li>
-            <NavLink to="" className={({ isActive }) =>
+            <NavLink to="dashboard" className={({ isActive }) =>
               isActive ? "block bg-blue-600 px-3 py-2 rounded" : "block hover:bg-gray-800 px-3 py-2 rounded"
             }>
               Dashboard

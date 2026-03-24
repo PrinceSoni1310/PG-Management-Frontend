@@ -28,7 +28,7 @@ export const Login = () => {
         if (res.data.role.toLowerCase() == "tenant" || res.data.role == "TENANT") {
           navigate("/tenant/dashboard");
         } else if (res.data.role.toLowerCase() == "owner" || res.data.role == "OWNER") {
-          navigate("/owner");
+          navigate("/owner/dashboard");
         } 
       }
        else {
@@ -111,7 +111,9 @@ export const Login = () => {
                   Password
                 </label>
                 <span className="text-xs text-blue-600 hover:underline cursor-pointer">
+                  <Link to="/forgotpassword">
                   Forgot Password?
+                  </Link>
                 </span>
               </div>
               <input
@@ -134,6 +136,8 @@ export const Login = () => {
               Sign In
             </button>
           </form>
+
+
 
           <div className="mt-8 text-center text-sm text-gray-600">
             Don't have an account?
