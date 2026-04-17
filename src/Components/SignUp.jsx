@@ -1,4 +1,4 @@
-import axios from "axios";
+import { authAPI } from "../services/api";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -17,17 +17,20 @@ export const SignUp = () => {
   const navigate = useNavigate();
 
   const submitHandler = async (data) => {
-    // console.log(data);
-    try {
-      const res = await axios.post("/user/register", data);
-      if (res.status == 201) {
-        toast.success("user register successfully");
-        navigate("/login");
-      }
-    } catch (err) {
-      toast.error("user not sign-up successfully"); 
+  try {
+    const { confirmPassword, ...sendData } = data; // ✅ remove confirmPassword
+
+    const res = await authAPI.register(sendData);
+
+    if (res.status == 201) {
+      toast.success("user register successfully");
+      navigate("/login");
     }
-  };
+  } catch (err) {
+    console.log(err.response?.data);
+    toast.error("user not sign-up successfully");
+  }
+};
 
   const validataionSchema = {
     fullNameValidation: {
@@ -119,24 +122,31 @@ export const SignUp = () => {
               </label>
 
               <div className="flex gap-6">
-                {/* Tenant */}
-                <label className="flex items-center gap-2">
+                  <label className="flex items-center gap-2">
                   <input
                     type="radio"
-                    value="Tenant"
+                    value="tenant"
                     {...register("role", { required: "Role is required*" })}
                   />
                   Tenant
                 </label>
 
-                {/* Owner */}
                 <label className="flex items-center gap-2">
                   <input
                     type="radio"
-                    value="Owner"
+                    value="owner"
                     {...register("role", { required: "Role is required*" })}
                   />
                   Owner
+                </label>
+
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    value="admin"
+                    {...register("role", { required: "Role is required*" })}
+                  />
+                  Admin
                 </label>
               </div>
 

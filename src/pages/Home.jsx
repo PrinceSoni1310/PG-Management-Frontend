@@ -13,9 +13,9 @@ export const Home = () => {
 
         <div className="flex gap-6 font-medium">
 
-          <Link to="/" className="hover:text-blue-600">
+          {/* <Link to="/" className="hover:text-blue-600">
             Home
-          </Link>
+          </Link> */}
 
           <Link to="/login" className="hover:text-blue-600">
             Login

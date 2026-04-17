@@ -1,44 +1,13 @@
-import axios from "axios";
 import React from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import { authAPI, pgAPI } from "../services/api";
+import { useAuth } from "../contexts/AuthContext";
 
-export const Login = () => {
+const Login = () => {
   const navigate = useNavigate();
-
-  const submitHandler = async (data) => {
-    console.log(data);
-    try {
-      const res = await axios.post("/user/login", data);
-      console.log("response..", res);
-      console.log(res.data.role);
-      
-
-      if (res.status == 200) {
-        toast.success("Login sucess");
-         console.log("role...",res.data.role)
-
-         console.log(res.data.token);
-         localStorage.setItem("token",res.data.token)
-         localStorage.setItem("role",res.data.role)
-         
-
-        if (res.data.role.toLowerCase() == "tenant" || res.data.role == "TENANT") {
-          navigate("/tenant/dashboard");
-        } else if (res.data.role.toLowerCase() == "owner" || res.data.role == "OWNER") {
-          navigate("/owner/dashboard");
-        } 
-      }
-       else {
-          toast.error("invalid role");
-          navigate("/login");
-        }
-    } catch (err) {
-      toast.error("error while login user");
-    }
-  };
+  const { login } = useAuth();
 
   const {
     register,
@@ -46,105 +15,191 @@ export const Login = () => {
     formState: { errors },
   } = useForm();
 
-  const validataionSchema = {
-    emailValidation: {
-      required: { value: true, message: "Email is required*" },
+  const submitHandler = async (data) => {
+    try {
+      const res = await authAPI.login(data);
+
+      const user = res?.data?.user;
+      const token = res?.data?.token;
+
+      if (!user || !token) {
+        toast.error("Invalid response from server");
+        return;
+      }
+
+      const role = user.role?.toLowerCase();
+
+      // ✅ STORE DATA
+      const normalizedUser = { ...user, id: user._id };
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("role", role);
+      localStorage.setItem("user", JSON.stringify(normalizedUser));
+      localStorage.setItem("userId", user._id);
+      if (user.pgId) localStorage.setItem("pgId", user.pgId);
+
+      login(token, role);
+
+      toast.success("Login successful");
+
+      // ===========================
+      // ✅ TENANT
+      // ===========================
+      if (role === "tenant") {
+        navigate("/tenant/dashboard");
+      }
+
+      // ===========================
+      // ✅ OWNER
+      // ===========================
+      else if (role === "owner") {
+        try {
+          const pgRes = await pgAPI.getOwnerPGs();
+          const pgs = pgRes?.data?.data || [];
+
+          // 🟢 FIRST TIME OWNER
+          if (pgs.length === 0) {
+            navigate("/owner/create-pg");
+            return;
+          }
+
+          const approvedPGs = pgs.filter(pg => pg.status === "approved");
+          const pendingPGs = pgs.filter(pg => pg.status === "pending");
+
+          // 🟢 APPROVED
+          if (approvedPGs.length > 0) {
+            localStorage.setItem("selectedPgId", approvedPGs[0]._id);
+            navigate("/owner/dashboard");
+          }
+
+          // 🟡 PENDING
+          else if (pendingPGs.length > 0) {
+            navigate("/owner/pending-approval");
+          }
+
+          // 🔴 REJECTED / NO VALID
+          else {
+            navigate("/owner/create-pg");
+          }
+
+        } catch (err) {
+          console.error("PG fetch error:", err);
+          navigate("/owner/dashboard"); // fallback
+        }
+      }
+
+      // ===========================
+      // ✅ ADMIN
+      // ===========================
+      else if (role === "admin") {
+        navigate("/admin/dashboard");
+      }
+
+      else {
+        toast.error("Invalid role");
+      }
+
+    } catch (err) {
+      console.error("Login error:", err);
+
+      const message =
+        err?.response?.data?.message || "Login failed";
+      toast.error(message);
+    }
+  };
+
+  const validationSchema = {
+    email: {
+      required: "Email is required",
       pattern: {
         value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
         message: "Invalid email",
       },
     },
-    passwordValidation: {
-      required: { value: true, message: "Password is required*" },
-      minLength: { value: 8, message: "Minimum 8 characters*" },
+    password: {
+      required: "Password is required",
+      minLength: {
+        value: 6,
+        message: "Minimum 6 characters",
+      },
     },
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6 font-sans">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
       <div className="max-w-4xl w-full bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row">
-        <div className="hidden md:block md:w-1/2 relative bg-blue-600">
+
+        {/* LEFT IMAGE */}
+        <div className="hidden md:block md:w-1/2 bg-blue-600 relative">
           <img
             src="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069"
-            alt="Office Lobby"
-            className="absolute inset-0 w-full h-full object-cover opacity-90"
+            alt="bg"
+            className="absolute w-full h-full object-cover opacity-90"
           />
-          <div className="relative z-10 h-full flex flex-col justify-end p-10 text-white bg-gradient-to-t from-black/70 to-transparent">
-            <h2 className="text-3xl font-bold italic mb-2">Paying Guest</h2>
-            <p className="text-gray-200 text-sm italic">
-              Manage your property with ease and precision.
-            </p>
-          </div>
         </div>
 
-        <div className="w-full md:w-1/2 p-8 md:p-14 flex flex-col justify-center">
-          <div className="mb-8">
-            <h2 className="text-3xl font-extrabold text-gray-900">
-              Welcome Back
-            </h2>
-            <p className="text-gray-500 mt-2 text-sm">
-              Please enter your details to sign in.
-            </p>
-          </div>
+        {/* RIGHT FORM */}
+        <div className="w-full md:w-1/2 p-10">
+          <h2 className="text-3xl font-bold mb-2">Welcome Back</h2>
+          <p className="text-gray-500 mb-6">
+            Please login to continue
+          </p>
 
-          <form onSubmit={handleSubmit(submitHandler)} className="space-y-6">
+          <form onSubmit={handleSubmit(submitHandler)} className="space-y-5">
+
+            {/* EMAIL */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Email Address
-              </label>
               <input
                 type="email"
-                placeholder="Enter your Email"
-                className={`w-full px-4 py-3 border rounded-lg outline-none transition duration-200 focus:ring-2 focus:ring-blue-500 ${errors.email ? "border-red-500" : "border-gray-300"}`}
-                {...register("email", validataionSchema.emailValidation)}
+                placeholder="Email"
+                className={`w-full p-3 border rounded ${
+                  errors.email ? "border-red-500" : ""
+                }`}
+                {...register("email", validationSchema.email)}
               />
               {errors.email && (
-                <p className="text-red-500 text-xs mt-1 font-medium">
-                  {errors.email?.message}
+                <p className="text-red-500 text-sm">
+                  {errors.email.message}
                 </p>
               )}
             </div>
 
+            {/* PASSWORD */}
             <div>
-              <div className="flex justify-between mb-2">
-                <label className="text-sm font-semibold text-gray-700">
-                  Password
-                </label>
-                <span className="text-xs text-blue-600 hover:underline cursor-pointer">
-                  <Link to="/forgotpassword">
-                  Forgot Password?
-                  </Link>
-                </span>
-              </div>
               <input
                 type="password"
-                placeholder="••••••••"
-                className={`w-full px-4 py-3 border rounded-lg outline-none transition duration-200 focus:ring-2 focus:ring-blue-500 ${errors.password ? "border-red-500" : "border-gray-300"}`}
-                {...register("password", validataionSchema.passwordValidation)}
+                placeholder="Password"
+                className={`w-full p-3 border rounded ${
+                  errors.password ? "border-red-500" : ""
+                }`}
+                {...register("password", validationSchema.password)}
               />
               {errors.password && (
-                <p className="text-red-500 text-xs mt-1 font-medium">
-                  {errors.password?.message}
+                <p className="text-red-500 text-sm">
+                  {errors.password.message}
                 </p>
               )}
             </div>
 
+            {/* BUTTON */}
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 shadow-md transform active:scale-[0.98] transition duration-200"
+              className="w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700"
             >
-              Sign In
+              Login
             </button>
           </form>
 
+          <div className="mt-5 text-sm text-center">
+            <Link to="/forgotpassword" className="text-blue-600">
+              Forgot Password?
+            </Link>
+          </div>
 
-
-          <div className="mt-8 text-center text-sm text-gray-600">
-            Don't have an account?
-            <Link to="/signup">
-              <button className="text-blue-600 font-bold hover:underline cursor-pointer">
-                Register Now
-              </button>
+          <div className="mt-4 text-center">
+            Don’t have an account?{" "}
+            <Link to="/signup" className="text-blue-600 font-semibold">
+              Register
             </Link>
           </div>
         </div>
@@ -152,3 +207,5 @@ export const Login = () => {
     </div>
   );
 };
+
+export default Login;
