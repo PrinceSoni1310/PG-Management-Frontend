@@ -63,7 +63,7 @@ export const FoodMenuOwner = () => {
   });
 
   useEffect(() => {
-    const storedPgId = localStorage.getItem('selectedPgId');
+    const storedPgId = sessionStorage.getItem('selectedPgId');
     if (storedPgId) {
       setPgId(storedPgId);
       fetchMenus(storedPgId);

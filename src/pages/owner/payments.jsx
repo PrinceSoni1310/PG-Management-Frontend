@@ -80,7 +80,7 @@ export const Payments = () => {
             onChange={(e) => {
               const newPgId = e.target.value;
               setSelectedPgId(newPgId);
-              localStorage.setItem('selectedPgId', newPgId);
+              sessionStorage.setItem('selectedPgId', newPgId);
             }}
             className="px-4 py-2 bg-white dark:bg-gray-800 border rounded-lg"
           >

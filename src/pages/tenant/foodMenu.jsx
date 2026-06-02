@@ -13,8 +13,8 @@ export const FoodMenuTenant = () => {
 
   // Fetch PG ID from localStorage
   useEffect(() => {
-    const storedPgId = localStorage.getItem('pgId') ||
-      JSON.parse(localStorage.getItem('user') || '{}')?.pgId;
+    const storedPgId = sessionStorage.getItem('pgId') ||
+      JSON.parse(sessionStorage.getItem('user') || '{}')?.pgId;
     if (storedPgId) {
       setPgId(storedPgId);
       fetchFoodMenus(storedPgId);

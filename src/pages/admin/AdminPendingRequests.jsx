@@ -13,7 +13,7 @@ export const AdminPendingRequests = () => {
   const fetchPendingPGs = async () => {
     try {
       setLoading(true);
-      const res = await pgAPI.adminGetAllPGs(null, 'pending');
+      const res = await pgAPI.adminGetAllPGs('pending');
       const pgs = res.data.data || [];
       setPendingPGs(pgs.filter(pg => pg.status === 'pending'));
     } catch (error) {

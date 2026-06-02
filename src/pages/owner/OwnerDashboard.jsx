@@ -53,23 +53,36 @@ export const OwnerDashboard = () => {
   // ================= FETCH PG =================
   const fetchPGs = async () => {
     try {
-      const response = await pgAPI.getPGs();
+      const ownerId = sessionStorage.getItem('userId');
+      if (!ownerId) {
+        navigate('/login');
+        return;
+      }
+
+      const response = await pgAPI.getOwnerPGs(ownerId);
       const allPgs = response.data.data || [];
 
       setPgs(allPgs);
 
       const approved = allPgs.filter(pg => pg.status === "approved");
+      const pending = allPgs.filter(pg => pg.status === "pending");
       setApprovedPgs(approved);
 
       if (approved.length > 0) {
-        const savedPgId = localStorage.getItem('selectedPgId');
+        const savedPgId = sessionStorage.getItem('selectedPgId');
 
         if (savedPgId && approved.find(pg => pg._id === savedPgId)) {
           setSelectedPgId(savedPgId);
         } else {
           setSelectedPgId(approved[0]._id);
-          localStorage.setItem('selectedPgId', approved[0]._id);
+          sessionStorage.setItem('selectedPgId', approved[0]._id);
         }
+      } else if (pending.length > 0) {
+        navigate('/owner/pending-approval');
+        return;
+      } else {
+        navigate('/owner/create-pg');
+        return;
       }
 
     } catch (error) {
@@ -134,7 +147,7 @@ export const OwnerDashboard = () => {
         });
       });
 
-      const requestRes = await tenantRequestAPI.ownerList();
+      const requestRes = await tenantRequestAPI.ownerList(undefined, selectedPgId);
       requestRes.data.data?.slice(0, 2).forEach(r => {
         activities.push({
           type: "request",
@@ -182,7 +195,7 @@ export const OwnerDashboard = () => {
             onChange={(e) => {
               const newPgId = e.target.value;
               setSelectedPgId(newPgId);
-              localStorage.setItem('selectedPgId', newPgId);
+              sessionStorage.setItem('selectedPgId', newPgId);
             }}
             className="px-4 py-2 border rounded text-white"
           >

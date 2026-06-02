@@ -28,8 +28,8 @@ export const AdminDashboard = () => {
       const users = usersRes.data.data || [];
       const payments = paymentsRes.data.data || [];
 
-      const owners = users.filter(u => u.role === 'Owner');
-      const tenants = users.filter(u => u.role === 'Tenant');
+      const owners = users.filter(u => String(u.role || '').toLowerCase() === 'owner');
+      const tenants = users.filter(u => String(u.role || '').toLowerCase() === 'tenant');
       const revenue = payments.reduce((sum, p) => sum + (p.amount || 0), 0);
       const pendingRequests = pgs.filter(pg => pg.status === 'pending');
 

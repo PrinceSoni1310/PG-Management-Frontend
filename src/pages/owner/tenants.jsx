@@ -19,7 +19,7 @@ export const Tenants = () => {
   const [approvedPgs, setApprovedPgs] = useState([]);
 
   useEffect(() => {
-    const pgId = localStorage.getItem('selectedPgId');
+    const pgId = sessionStorage.getItem('selectedPgId');
     if (pgId) {
       setSelectedPgId(pgId);
       fetchTenants(pgId);
@@ -37,13 +37,13 @@ export const Tenants = () => {
 
         // Validate and set selectedPgId
         if (approved.length > 0 && (!selectedPgId || !approved.find(pg => pg._id === selectedPgId))) {
-          const savedPgId = localStorage.getItem('selectedPgId');
+          const savedPgId = sessionStorage.getItem('selectedPgId');
           if (savedPgId && approved.find(pg => pg._id === savedPgId)) {
             setSelectedPgId(savedPgId);
           } else {
             const newPgId = approved[0]._id;
             setSelectedPgId(newPgId);
-            localStorage.setItem('selectedPgId', newPgId);
+            sessionStorage.setItem('selectedPgId', newPgId);
           }
         }
       } catch (error) {
@@ -142,19 +142,24 @@ export const Tenants = () => {
     }
 
     try {
-      await authAPI.register({
+      const response = await authAPI.addTenant({
         fullName: newTenant.fullName,
         email: newTenant.email,
-        role: 'Tenant',
         pgId: selectedPgId
       });
-      toast.success('Tenant added successfully');
-      setShowAddModal(false);
-      setNewTenant({ fullName: '', email: '' });
-      fetchTenants(selectedPgId);
+
+      if (response.data.success) {
+        toast.success('Tenant added successfully! Welcome email sent to ' + newTenant.email);
+        setShowAddModal(false);
+        setNewTenant({ fullName: '', email: '' });
+        fetchTenants(selectedPgId);
+      } else {
+        toast.error(response.data.message || 'Failed to add tenant');
+      }
     } catch (error) {
       console.error('Error adding tenant:', error);
-      toast.error('Failed to add tenant');
+      const errorMsg = error.response?.data?.message || 'Failed to add tenant';
+      toast.error(errorMsg);
     }
   };
 
@@ -206,7 +211,7 @@ export const Tenants = () => {
             onChange={(e) => {
               const newPgId = e.target.value;
               setSelectedPgId(newPgId);
-              localStorage.setItem('selectedPgId', newPgId);
+              sessionStorage.setItem('selectedPgId', newPgId);
               fetchTenants(newPgId);
               fetchRooms(newPgId);
             }}

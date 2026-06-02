@@ -9,7 +9,7 @@ export const ComplaintsOwner = () => {
   const [selectedPgId, setSelectedPgId] = useState('');
 
   useEffect(() => {
-    const pgId = localStorage.getItem('selectedPgId');
+    const pgId = sessionStorage.getItem('selectedPgId');
     if (pgId) {
       setSelectedPgId(pgId);
       fetchComplaints(pgId);

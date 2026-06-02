@@ -3,7 +3,7 @@ import axios from "axios";
 const PaymentButton = ({ amount, pgId, month, year }) => {
   const handlePayment = async () => {
     try {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
 
       // 1. Create Order
       const { data } = await axios.post(

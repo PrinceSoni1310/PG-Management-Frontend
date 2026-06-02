@@ -29,7 +29,7 @@ export const TenantDashboard = () => {
     try {
       let storedUser;
       try {
-        const userString = localStorage.getItem('user');
+        const userString = sessionStorage.getItem('user');
         storedUser = userString ? JSON.parse(userString) : null;
       } catch (parseError) {
         console.error('Error parsing user from localStorage:', parseError);
@@ -51,8 +51,8 @@ export const TenantDashboard = () => {
         const profileRes = await authAPI.getProfile(storedUser.id);
         const freshUser = profileRes.data?.data || profileRes.data || {};
         storedUser = { ...storedUser, ...freshUser, id: freshUser._id || storedUser.id };
-        localStorage.setItem('user', JSON.stringify(storedUser));
-        if (storedUser.pgId) localStorage.setItem('pgId', storedUser.pgId);
+        sessionStorage.setItem('user', JSON.stringify(storedUser));
+        if (storedUser.pgId) sessionStorage.setItem('pgId', storedUser.pgId);
       } catch (refreshError) {
         console.warn('Could not refresh user profile:', refreshError);
       }
@@ -90,7 +90,7 @@ export const TenantDashboard = () => {
         const roomRes = await roomAPI.getRooms(userData.pgId);
         rooms = roomRes.data.data || [];
         for (const room of rooms) {
-          if (room.occupants && room.occupants.some(occ => String(occ._id) === String(userData.id))) {
+          if (room.occupants && room.occupants.some(occ => String((occ && occ._id) || occ) === String(userData.id))) {
             userRoom = room;
             break;
           }
@@ -108,7 +108,7 @@ export const TenantDashboard = () => {
       // Fetch payment status
       let paymentStatus = 'pending';
       try {
-        const paymentRes = await paymentAPI.getPayments(userData.id);
+        const paymentRes = await paymentAPI.getTenantPayments();
         const payments = paymentRes.data.data || [];
         const latestPayment = payments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
         paymentStatus = latestPayment ? latestPayment.status : 'pending';
@@ -120,8 +120,7 @@ export const TenantDashboard = () => {
       let roomPartners = [];
       if (userRoom.occupants && Array.isArray(userRoom.occupants)) {
         roomPartners = userRoom.occupants.filter(occupant => {
-          // Handle both object and ID formats
-          const occupantId = typeof occupant === 'object' ? occupant._id : occupant;
+          const occupantId = typeof occupant === 'object' ? (occupant._id || occupant) : occupant;
           return String(occupantId) !== String(userData.id);
         }).map(occupant => {
           // If it's an ID string, we can't display partner details, so return a basic object
@@ -163,7 +162,7 @@ export const TenantDashboard = () => {
 
       setDashboardData({
         roomNumber: userRoom.roomNumber,
-        monthlyRent: userRoom.rentAmount || 0,
+        monthlyRent: userRoom.rentAmount || userRoom.pgId?.rentPerBed || 0,
         paymentStatus,
         roomPartners,
         todaysMenu,

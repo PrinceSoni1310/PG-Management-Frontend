@@ -12,7 +12,7 @@ export const Rooms = () => {
   const [approvedPgs, setApprovedPgs] = useState([]);
 
   useEffect(() => {
-    const pgId = localStorage.getItem('selectedPgId');
+    const pgId = sessionStorage.getItem('selectedPgId');
     if (pgId) {
       setSelectedPgId(pgId);
       fetchRooms(pgId);
@@ -30,13 +30,13 @@ export const Rooms = () => {
         setApprovedPgs(approved);
 
         if (approved.length > 0 && (!selectedPgId || !approved.find(pg => pg._id === selectedPgId))) {
-          const savedPgId = localStorage.getItem('selectedPgId');
+          const savedPgId = sessionStorage.getItem('selectedPgId');
           if (savedPgId && approved.find(pg => pg._id === savedPgId)) {
             setSelectedPgId(savedPgId);
           } else {
             const newPgId = approved[0]._id;
             setSelectedPgId(newPgId);
-            localStorage.setItem('selectedPgId', newPgId);
+            sessionStorage.setItem('selectedPgId', newPgId);
             fetchRooms(newPgId);
           }
         }
@@ -117,7 +117,7 @@ export const Rooms = () => {
             onChange={(e) => {
               const newPgId = e.target.value;
               setSelectedPgId(newPgId);
-              localStorage.setItem('selectedPgId', newPgId);
+              sessionStorage.setItem('selectedPgId', newPgId);
               fetchRooms(newPgId);
             }}
             className="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"

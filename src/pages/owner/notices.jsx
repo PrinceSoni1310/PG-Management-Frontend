@@ -11,7 +11,7 @@ export const NoticesOwner = () => {
   const [selectedPgId, setSelectedPgId] = useState('');
 
   useEffect(() => {
-    const pgId = localStorage.getItem('selectedPgId');
+    const pgId = sessionStorage.getItem('selectedPgId');
     if (pgId) {
       setSelectedPgId(pgId);
       fetchNotices(pgId);

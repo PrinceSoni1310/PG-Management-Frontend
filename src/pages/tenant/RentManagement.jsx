@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { MdAttachMoney, MdDateRange, MdCheckCircle, MdError, MdPayment, MdHistory } from 'react-icons/md';
 import { useAuth } from '../../contexts/AuthContext';
-import { paymentAPI } from '../../services/api';
-import ScriptTag from 'react-script-tag';
-
-import { QRCodeCanvas } from 'qrcode.react';
 import { pgAPI, paymentAPI } from '../../services/api';
-import { useAuth } from '../../contexts/AuthContext';
-import { useState, useEffect } from 'react';\n\nexport const RentDetails = () => {
+import ScriptTag from 'react-script-tag';
+import { QRCodeCanvas } from 'qrcode.react';
+
+export const RentDetails = () => {
   const { auth } = useAuth();
   const [rentData, setRentData] = useState({
     totalRent: 5000, // Replace with real room/pg rentPerBed

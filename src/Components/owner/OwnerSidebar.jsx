@@ -5,7 +5,7 @@ export const OwnerSidebar = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.clear();
+    sessionStorage.clear();
     navigate("/login");
   };
 
@@ -79,19 +79,6 @@ export const OwnerSidebar = () => {
 
           <li>
             <NavLink 
-              to="payments" 
-              className={({ isActive }) =>
-                isActive 
-                  ? "block px-4 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 text-white shadow-lg shadow-blue-500/25 dark:shadow-blue-600/50 ring-2 ring-blue-500/30 transform scale-[1.02] transition-all duration-200 font-medium text-sm" 
-                  : "block px-4 py-3 rounded-lg transition-all duration-200 font-medium text-sm hover:bg-gray-100 dark:hover:bg-gray-800 hover:shadow-md hover:text-gray-900 dark:hover:text-white text-gray-700 dark:text-gray-300"
-              }
-            >
-              Payments
-            </NavLink>
-          </li>
-
-          <li>
-            <NavLink 
               to="food-menu" 
               className={({ isActive }) =>
                 isActive 
@@ -144,14 +131,14 @@ export const OwnerSidebar = () => {
 
           <li>
             <NavLink 
-              to="settings" 
+              to="profile" 
               className={({ isActive }) =>
                 isActive 
                   ? "block px-4 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 text-white shadow-lg shadow-blue-500/25 dark:shadow-blue-600/50 ring-2 ring-blue-500/30 transform scale-[1.02] transition-all duration-200 font-medium text-sm" 
                   : "block px-4 py-3 rounded-lg transition-all duration-200 font-medium text-sm hover:bg-gray-100 dark:hover:bg-gray-800 hover:shadow-md hover:text-gray-900 dark:hover:text-white text-gray-700 dark:text-gray-300"
               }
             >
-              Settings
+              Profile
             </NavLink>
           </li>
 

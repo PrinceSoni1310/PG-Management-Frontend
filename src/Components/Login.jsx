@@ -32,11 +32,11 @@ const Login = () => {
       // ✅ STORE DATA
       const normalizedUser = { ...user, id: user._id };
 
-      localStorage.setItem("token", token);
-      localStorage.setItem("role", role);
-      localStorage.setItem("user", JSON.stringify(normalizedUser));
-      localStorage.setItem("userId", user._id);
-      if (user.pgId) localStorage.setItem("pgId", user.pgId);
+      sessionStorage.setItem("token", token);
+      sessionStorage.setItem("role", role);
+      sessionStorage.setItem("user", JSON.stringify(normalizedUser));
+      sessionStorage.setItem("userId", user._id);
+      if (user.pgId) sessionStorage.setItem("pgId", user.pgId);
 
       login(token, role);
 
@@ -54,11 +54,12 @@ const Login = () => {
       // ===========================
       else if (role === "owner") {
         try {
-          const pgRes = await pgAPI.getOwnerPGs();
+          const pgRes = await pgAPI.getOwnerPGs(user._id);
           const pgs = pgRes?.data?.data || [];
 
           // 🟢 FIRST TIME OWNER
           if (pgs.length === 0) {
+            sessionStorage.removeItem('selectedPgId');
             navigate("/owner/create-pg");
             return;
           }
@@ -68,7 +69,7 @@ const Login = () => {
 
           // 🟢 APPROVED
           if (approvedPGs.length > 0) {
-            localStorage.setItem("selectedPgId", approvedPGs[0]._id);
+            sessionStorage.setItem("selectedPgId", approvedPGs[0]._id);
             navigate("/owner/dashboard");
           }
 

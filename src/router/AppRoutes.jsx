@@ -24,7 +24,7 @@ import { Payments } from "../pages/owner/payments";
 import { FoodMenuOwner } from "../pages/owner/foodMenu";
 import { NoticesOwner } from "../pages/owner/notices";
 import { ComplaintsOwner } from "../pages/owner/complaints";
-import { Settings } from "../pages/owner/settings";
+import { OwnerProfile } from "../pages/owner/settings";
 import { TenantRequests } from "../pages/owner/TenantRequests";
 import { CreatePG } from "../pages/owner/CreatePG";
 import { PendingApproval } from "../pages/owner/PendingApproval";
@@ -80,7 +80,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/owner/pending-approval",
-    element: <PendingApproval />,
+    element: (
+      <ProtectedRoutes Roles={["owner"]}>
+        <PendingApproval />
+      </ProtectedRoutes>
+    ),
   },
 
   /* ADMIN */
@@ -113,7 +117,8 @@ const router = createBrowserRouter([
       { path: "notices", element: <NoticesOwner /> },
       { path: "tenant-requests", element: <TenantRequests /> },
       { path: "complaints", element: <ComplaintsOwner /> },
-      { path: "settings", element: <Settings /> },
+      { path: "settings", element: <OwnerProfile /> },
+      { path: "profile", element: <OwnerProfile /> },
       { path: "add-pg", element: <CreatePG /> },
     ],
   },

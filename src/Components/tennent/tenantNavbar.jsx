@@ -67,13 +67,13 @@ export const TenantNavbar = () => {
             </NavLink>
           </li>
 
-          <li>
+          {/* <li>
             <NavLink to="payments" className={({ isActive }) =>
               isActive ? "text-blue-600 dark:text-blue-400 font-semibold" : "text-gray-700 dark:text-white hover:text-blue-600 dark:hover:text-blue-400"
             }>
               Payments
             </NavLink>
-          </li>
+          </li> */}
 
           <li>
             <NavLink to="profile" className={({ isActive }) =>

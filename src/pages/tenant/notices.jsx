@@ -9,7 +9,7 @@ export const NoticesTenant = () => {
   const [selectedPgId, setSelectedPgId] = useState('');
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'));
+    const user = JSON.parse(sessionStorage.getItem('user'));
     if (user && user.pgId) {
       setSelectedPgId(user.pgId);
       fetchNotices(user.pgId);

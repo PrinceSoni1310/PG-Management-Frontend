@@ -140,14 +140,14 @@ export const SignUp = () => {
                   Owner
                 </label>
 
-                <label className="flex items-center gap-2">
+                {/* <label className="flex items-center gap-2">
                   <input
                     type="radio"
                     value="admin"
                     {...register("role", { required: "Role is required*" })}
                   />
                   Admin
-                </label>
+                </label> */}
               </div>
 
               {errors.role && (

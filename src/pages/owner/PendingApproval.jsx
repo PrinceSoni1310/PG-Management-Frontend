@@ -15,7 +15,7 @@ export const PendingApproval = () => {
 
   const fetchPGRequests = async () => {
     try {
-      const ownerId = localStorage.getItem('userId');
+      const ownerId = sessionStorage.getItem('userId');
       if (!ownerId) {
         navigate('/login');
         return;
@@ -32,20 +32,20 @@ export const PendingApproval = () => {
   };
 
   const handleLogout = () => {
-    localStorage.clear();
+    sessionStorage.clear();
     navigate('/login');
   };
 
   const checkApprovalStatus = async () => {
     try {
-      const ownerId = localStorage.getItem('userId');
+      const ownerId = sessionStorage.getItem('userId');
       const response = await pgAPI.getOwnerPGs(ownerId);
       const ownerRequests = response.data.data || [];
       const approvedPGs = ownerRequests.filter(pg => pg.status === 'approved');
 
       if (approvedPGs.length > 0) {
         // Set the first approved PG as selected
-        localStorage.setItem('selectedPgId', approvedPGs[0]._id);
+        sessionStorage.setItem('selectedPgId', approvedPGs[0]._id);
         toast.success('Your PG has been approved! Redirecting to dashboard...');
         navigate('/owner/dashboard');
       } else {

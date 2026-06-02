@@ -43,7 +43,7 @@ export const CreatePG = () => {
       toast.success(
         "PG registration request submitted! Please wait for admin approval.",
       );
-      navigate("/owner/dashboard");
+      navigate("/owner/pending-approval");
     } catch (error) {
       console.error("Error creating PG:", error);
       toast.error("Failed to submit PG registration request");
@@ -334,6 +334,44 @@ export const CreatePG = () => {
                     {errors.rentPerBed.message}
                   </p>
                 )}
+              </div>
+            </div>
+
+            {/* UPI ID */}
+            <div>
+              <label
+                htmlFor="upiId"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
+                Owner UPI ID
+              </label>
+              <div className="mt-1">
+                <input
+                  id="upiId"
+                  type="text"
+                  {...register("upiId")}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  placeholder="Enter UPI ID (e.g. owner@bank)"
+                />
+              </div>
+            </div>
+
+            {/* Scanner Code */}
+            <div>
+              <label
+                htmlFor="scannerCode"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
+                Scanner Code
+              </label>
+              <div className="mt-1">
+                <input
+                  id="scannerCode"
+                  type="text"
+                  {...register("scannerCode")}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  placeholder="Enter scanner code or payment tag"
+                />
               </div>
             </div>
 
